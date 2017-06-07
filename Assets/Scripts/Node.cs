@@ -29,14 +29,9 @@ public class Node {
 
     public int CompareTo(Node nodeToCompare)
     {
-        if (this.x == nodeToCompare.x && this.y == nodeToCompare.y)
+        if (this.x == nodeToCompare.x && this.y == nodeToCompare.y && this.f > nodeToCompare.f)
         {
             int compare = f.CompareTo(nodeToCompare.f);
-
-            if (compare == 0)
-            {
-                compare = h.CompareTo(nodeToCompare.h);
-            }
             return compare;
         }
         else

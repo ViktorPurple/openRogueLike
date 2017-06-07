@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PathFinder : MonoBehaviour {
+public class PathFinder : MonoBehaviour
+{
 
     //temp
 
@@ -16,28 +17,55 @@ public class PathFinder : MonoBehaviour {
         // x, y, h, g,  f, parent
 
 
-        Node startNode = new Node((int) start.x, (int) start.y, calculateHCost(start, end), 0);
+        Node startNode = new Node((int)start.x, (int)start.y, calculateHCost(start, end), 0);
 
         //spare Nodes
-        addSpareNodes(end, startNode);
+        //first line
+         listOfNodes.Add(new Node(startNode.x - 1, startNode.y - 1, calculateHCost(start, end), 14));
+
+         listOfNodes.Add(new Node(startNode.x, startNode.y - 1, calculateHCost(start, end), 10));
+
+
+         listOfNodes.Add(new Node(startNode.x + 1, startNode.y - 1, calculateHCost(start, end), 14));
+
+        //second line
+         listOfNodes.Add(new Node(startNode.x - 1, startNode.y, calculateHCost(start, end), 10));
+
+         listOfNodes.Add(new Node(startNode.x + 1, startNode.y, calculateHCost(start, end), 10));
+
+        //3rd line
+         listOfNodes.Add(new Node(startNode.x - 1, startNode.y + 1, calculateHCost(start, end), 14));
+
+        compareAndChange(new Node(startNode.x, startNode.y + 1, calculateHCost(start, end), 10));
+
+        compareAndChange(new Node(startNode.x + 1, startNode.y + 1, calculateHCost(start, end), 14));
+
+
+
+
+
+       //addSpareNodes(end, startNode);
 
         Node current = nextNode(listOfNodes[0]);
         go = Instantiate(pathArea, new Vector2(current.x, current.y), Quaternion.identity);
 
         // (player.position.x - end.x != 0 || player.position.y - end.y != 0)
         //while (current.x - (int) end.x != 0 || current.y - (int)end.y != 0)
-        for (int i = 0; i < 20; i ++)
+        for (int i = 0; i < 20; i++)
         {
-           // Debug.Log(current.x + " " + current.y + " in Process");
+            // Debug.Log(current.x + " " + current.y + " in Process");
             current = nextNode(current);
             addSpareNodes(end, current);
             current = nextNode(current);
-           go = Instantiate(pathArea, new Vector2(current.x, current.y), Quaternion.identity);
-      }
+            go = Instantiate(pathArea, new Vector2(current.x, current.y), Quaternion.identity);
+        }
         //Debug.Log(current.x + " " + current.y + " path found");
-          
-        
-        
+
+        foreach (Node node in listOfNodes)
+        {
+            Debug.Log(node.toString());
+        }
+
     }
 
     private int calculateHCost(Vector3 start, Vector3 end)
@@ -67,41 +95,49 @@ public class PathFinder : MonoBehaviour {
     {
         Vector3 start = new Vector3(current.x, current.y, 0);
         //first line
-        if (!compareAndChange(new Node(current.x - 1, current.y - 1, calculateHCost(start, end), 14)))
-        { listOfNodes.Add(new Node(current.x - 1, current.y - 1, calculateHCost(start, end), 14)); }
+         compareAndChange(new Node(current.x - 1, current.y - 1, calculateHCost(start, end), 14));
 
-        if (!compareAndChange(new Node(current.x, current.y - 1, calculateHCost(start, end), 10)))
-        { listOfNodes.Add(new Node(current.x, current.y - 1, calculateHCost(start, end), 10)); }
+         compareAndChange(new Node(current.x, current.y - 1, calculateHCost(start, end), 10));
 
-         if (!compareAndChange(new Node(current.x + 1, current.y - 1, calculateHCost(start, end), 14)))
-         { listOfNodes.Add(new Node(current.x + 1, current.y - 1, calculateHCost(start, end), 14)); }
+
+         compareAndChange(new Node(current.x + 1, current.y - 1, calculateHCost(start, end), 14));
+
         //second line
-         if (!compareAndChange(new Node(current.x - 1, current.y, calculateHCost(start, end), 10)))
-        { listOfNodes.Add(new Node(current.x - 1, current.y, calculateHCost(start, end), 10)); }       
-         if (!compareAndChange(new Node(current.x + 1, current.y, calculateHCost(start, end), 10)))
-                { listOfNodes.Add(new Node(current.x + 1, current.y, calculateHCost(start, end), 10)); }
+         compareAndChange(new Node(current.x - 1, current.y, calculateHCost(start, end), 10));
+
+         compareAndChange(new Node(current.x + 1, current.y, calculateHCost(start, end), 10));
+
         //3rd line
-         if (!compareAndChange(new Node(current.x - 1, current.y + 1, calculateHCost(start, end), 14)))
-        { listOfNodes.Add(new Node(current.x - 1, current.y + 1, calculateHCost(start, end), 10)); }
-        if (!compareAndChange(new Node(current.x, current.y + 1, calculateHCost(start, end), 10)))
-        { listOfNodes.Add(new Node(current.x, current.y + 1, calculateHCost(start, end), 10)); }
-        if (!compareAndChange(new Node(current.x + 1, current.y + 1, calculateHCost(start, end), 14)))
-        { listOfNodes.Add(new Node(current.x + 1, current.y + 1, calculateHCost(start, end), 10)); }
+         compareAndChange(new Node(current.x - 1, current.y + 1, calculateHCost(start, end), 14));
+
+         compareAndChange(new Node(current.x, current.y + 1, calculateHCost(start, end), 10));
+
+         compareAndChange(new Node(current.x + 1, current.y + 1, calculateHCost(start, end), 14));
+
     }
 
-    private bool compareAndChange(Node current)
+    private void compareAndChange(Node current)
     {
-        foreach (Node node in listOfNodes)
+        int count = listOfNodes.Count;
+        for (int i = 0; i < count; i++)
         {
-            if (current.CompareTo(node) < 0)
+            if (current.CompareTo(listOfNodes[i]) > 0)
             {
-                node.h = current.h;
-                node.g = current.g;
-                node.f = current.f;
-                return true;
+                listOfNodes[i].h = current.h;
+                listOfNodes[i].g = current.g;
+                listOfNodes[i].f = current.f;
+                Debug.Log("changed");
+                
+
+            }
+            else
+            {
+                listOfNodes.Add(current);
+                Debug.Log("Not Changed");
+               
             }
         }
-        return false;
+
     }
 
     private Node nextNode(Node current)
@@ -111,10 +147,10 @@ public class PathFinder : MonoBehaviour {
         {
             if (minNode.f > node.f)
             {
-                Debug.Log("node changed from " + minNode.toString() + " to " + node.toString());
+                // Debug.Log("node changed from " + minNode.toString() + " to " + node.toString());
                 minNode = node;
                 //Debug.Log("node changed");
-                
+
             }
             else
             {
@@ -122,6 +158,7 @@ public class PathFinder : MonoBehaviour {
                 {
                     minNode = minNode.h > node.h ? node : minNode;
                 }
+                //Debug.Log("didn't change ");
             }
         }
         return minNode;
