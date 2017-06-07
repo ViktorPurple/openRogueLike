@@ -79,7 +79,7 @@ public class PlayerMovement : MonoBehaviour {
 
     private IEnumerator SmoothMovePlayer(Vector3 end)
     {
-        gameObject.AddComponent<PathFinder>().PathFinderMain(player.position, touchFinalRound, pathShit);
+        gameObject.AddComponent<PathFinder>().PathFinderMain(player.position, end, pathShit);
 
         while (player.position.x - end.x != 0 || player.position.y - end.y != 0)
         {

@@ -27,16 +27,35 @@ public class Node {
 
 
 
-    public int CompareTo(Node nodeToCompare)
+    public bool CompareTo(Node nodeToCompare)
     {
-        if (this.x == nodeToCompare.x && this.y == nodeToCompare.y && this.f > nodeToCompare.f)
-        {
+        if (this.x == nodeToCompare.x && this.y == nodeToCompare.y)
+        {             
             int compare = f.CompareTo(nodeToCompare.f);
-            return compare;
+
+            if (compare == 0)
+            {
+                compare = h.CompareTo(nodeToCompare.h);
+                if (compare == 0)
+                {
+
+                    return true;
+                }
+                else
+                {
+                    return true;
+                }
+
+            }
+            else
+            {
+                return true;
+            }
+           
         }
         else
         {
-            return 0;
+            return false;
         }
     }
 
