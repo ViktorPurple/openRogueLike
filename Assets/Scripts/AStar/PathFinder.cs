@@ -10,6 +10,7 @@ public class PathFinder : MonoBehaviour
     private GameObject go;
     List<Node> listOfNodes = new List<Node>();
     List<Node> blockNodes = new List<Node>();
+    private LayerMask blockingLayer;
 
     private GameObject p;
 
@@ -19,70 +20,61 @@ public class PathFinder : MonoBehaviour
     {
         // x, y, h, g,  f, parent
         p = pathArea;
+        blockingLayer = LayerMask.NameToLayer("Walls");
+
+
 
         Node startNode = new Node((int)start.x, (int)start.y, calculateHCost(start, end), 0);
         blockNodes.Add(startNode);
+
         //spare Nodes
         //first line
-         listOfNodes.Add(new Node(startNode.x - 1, startNode.y - 1, calculateHCost(new Vector2(startNode.x - 1, startNode.y - 1), end), 14));
-
-         listOfNodes.Add(new Node(startNode.x, startNode.y - 1, calculateHCost(new Vector2(startNode.x, startNode.y - 1), end), 10));
-
-
-         listOfNodes.Add(new Node(startNode.x + 1, startNode.y - 1, calculateHCost(new Vector2(startNode.x + 1, startNode.y - 1), end), 14));
+        listOfNodes.Add(new Node(startNode.x - 1, startNode.y - 1, calculateHCost(new Vector2(startNode.x - 1, startNode.y - 1), end), 14));
+        listOfNodes.Add(new Node(startNode.x,     startNode.y - 1, calculateHCost(new Vector2(startNode.x, startNode.y - 1), end), 10));
+        listOfNodes.Add(new Node(startNode.x + 1, startNode.y - 1, calculateHCost(new Vector2(startNode.x + 1, startNode.y - 1), end), 14));
 
         //second line
-         listOfNodes.Add(new Node(startNode.x - 1, startNode.y, calculateHCost(new Vector2(startNode.x - 1, startNode.y ), end), 10));
-
-         listOfNodes.Add(new Node(startNode.x + 1, startNode.y, calculateHCost(new Vector2(startNode.x + 1, startNode.y ), end), 10));
+        listOfNodes.Add(new Node(startNode.x - 1, startNode.y, calculateHCost(new Vector2(startNode.x - 1, startNode.y), end), 10));
+        listOfNodes.Add(new Node(startNode.x + 1, startNode.y, calculateHCost(new Vector2(startNode.x + 1, startNode.y), end), 10));
 
         //3rd line
-         listOfNodes.Add(new Node(startNode.x - 1, startNode.y + 1, calculateHCost(new Vector2(startNode.x - 1, startNode.y + 1), end), 14));
-
-        listOfNodes.Add(new Node(startNode.x, startNode.y + 1, calculateHCost(new Vector2(startNode.x, startNode.y + 1), end), 10));
-
+        listOfNodes.Add(new Node(startNode.x - 1, startNode.y + 1, calculateHCost(new Vector2(startNode.x - 1, startNode.y + 1), end), 14));
+        listOfNodes.Add(new Node(startNode.x,     startNode.y + 1, calculateHCost(new Vector2(startNode.x, startNode.y + 1), end), 10));
         listOfNodes.Add(new Node(startNode.x + 1, startNode.y + 1, calculateHCost(new Vector2(startNode.x + 1, startNode.y + 1), end), 14));
 
 
         // temporary stuff
         go = Instantiate(p, new Vector2(startNode.x - 1, startNode.y - 1), Quaternion.identity);
-        go = Instantiate(p, new Vector2(startNode.x, startNode.y - 1), Quaternion.identity);
+        go = Instantiate(p, new Vector2(startNode.x,     startNode.y - 1), Quaternion.identity);
         go = Instantiate(p, new Vector2(startNode.x + 1, startNode.y - 1), Quaternion.identity);
 
         go = Instantiate(p, new Vector2(startNode.x - 1, startNode.y), Quaternion.identity);
         go = Instantiate(p, new Vector2(startNode.x + 1, startNode.y), Quaternion.identity);
 
         go = Instantiate(p, new Vector2(startNode.x - 1, startNode.y + 1), Quaternion.identity);
-        go = Instantiate(p, new Vector2(startNode.x, startNode.y + 1), Quaternion.identity);
+        go = Instantiate(p, new Vector2(startNode.x,     startNode.y + 1), Quaternion.identity);
         go = Instantiate(p, new Vector2(startNode.x + 1, startNode.y + 1), Quaternion.identity);
 
 
-        //addSpareNodes(end, startNode);
+
 
         Node current = nextNode(listOfNodes[0]);
-        // go = Instantiate(pathArea, new Vector2(current.x, current.y), Quaternion.identity);
         
-        // (player.position.x - end.x != 0 || player.position.y - end.y != 0)
-        while (current.x != (int) end.x || current.y != (int)end.y)
-        //for (int i = 0; i < 200; i++)
+        while (current.x != (int)end.x || current.y != (int)end.y)
         {
-            // Debug.Log(current.x + " " + current.y + " in Process");
             current = nextNode(current);
             addSpareNodes(end, current);
-            
-        }
-        //Debug.Log(current.x + " " + current.y + " path found");
 
+        }
 
         foreach (Node node in listOfNodes)
         {
             Debug.Log(node.toString());
         }
-        Debug.Log("end of array");
     }
 
 
-
+    // Calculating HCost 
     private int calculateHCost(Vector3 start, Vector3 end)
     {
         Vector2 spot = new Vector2(start.x, start.y);
@@ -102,49 +94,42 @@ public class PathFinder : MonoBehaviour
             spot = new Vector2(spot.x + x, spot.y + y);
 
         }
-        //Debug.Log(h);
         return h;
     }
 
+
+    //add all side Nodes
     private void addSpareNodes(Vector3 end, Node current)
     {
         Vector3 start = new Vector3(current.x, current.y, 0);
         //first line
-         compareAndChange(new Node(current.x - 1, current.y - 1, calculateHCost(new Vector2(current.x - 1, current.y - 1), end), 14));
-
-         compareAndChange(new Node(current.x, current.y - 1, calculateHCost(new Vector2(current.x, current.y - 1), end), 10));
-
-
-         compareAndChange(new Node(current.x + 1, current.y - 1, calculateHCost(new Vector2(current.x + 1, current.y - 1), end), 14));
-
-        //second line
-         compareAndChange(new Node(current.x - 1, current.y, calculateHCost(new Vector2(current.x - 1, current.y), end), 10));
-
-         compareAndChange(new Node(current.x + 1, current.y, calculateHCost(new Vector2(current.x + 1, current.y), end), 10));
-
-        //3rd line
-         compareAndChange(new Node(current.x - 1, current.y + 1, calculateHCost(new Vector2(current.x - 1, current.y + 1), end), 14));
-
-         compareAndChange(new Node(current.x, current.y + 1, calculateHCost(new Vector2(current.x - 1, current.y + 1), end), 10));
-
-         compareAndChange(new Node(current.x + 1, current.y + 1, calculateHCost(new Vector2(current.x + 1, current.y +1), end), 14));
-
+        for (int i = -1; i <= 1; i++)
+        {
+            for (int j = -1; j <= 1; j++)
+            {
+                if (!(i == 0 && j == 0))
+                {
+                    int g = Mathf.Abs(i) != Mathf.Abs(j) ? 14 : 10;
+                    compareAndChange(new Node(current.x + i, current.y + j, calculateHCost(new Vector2(current.x + i, current.y + j), end), g));
+                }
+            }
+        }
     }
 
+    // If same change stats
     private void compareAndChange(Node current)
     {
         int count = listOfNodes.Count;
 
         for (int i = 0; i < count; i++)
-        {
+        {  
+            
             if (current.CompareTo(listOfNodes[i]))
             {
                 listOfNodes[i].h = current.h;
                 listOfNodes[i].g = current.g;
                 listOfNodes[i].f = current.f;
-               
                 return;
-       
             }
             else
             {
@@ -152,9 +137,10 @@ public class PathFinder : MonoBehaviour
             }
         }
         go = Instantiate(p, new Vector2(current.x, current.y), Quaternion.identity);
-        listOfNodes.Add(current);       
+        listOfNodes.Add(current);
     }
-
+    
+    //Next node picker
     private Node nextNode(Node current)
     {
         Node minNode = current;
@@ -163,59 +149,46 @@ public class PathFinder : MonoBehaviour
         {
             if (minNode.f > node.f)
             {
-               
                 minNode = node;
-                //Debug.Log("node changed");
-                //return minNode;
             }
             else
             {
                 if (minNode.f == node.f)
                 {
                     minNode = minNode.h > node.h ? node : minNode;
-                    //return minNode;
                 }
-                //Debug.Log("didn't change ");
+
             }
         }
 
         Node secondMin = minNode;
         if (minNode == current)
         {
-            Debug.Log("Was here before");
             foreach (Node node in listOfNodes)
             {
                 if (minNode.f != secondMin.f && secondMin.f > node.f)
                 {
                     secondMin = node;
-                    Debug.Log("Was here in true");
                 }
                 else
                 {
                     if (minNode.f != secondMin.f && secondMin.f == node.f)
                     {
                         secondMin = minNode.h > node.h ? node : secondMin;
-                        Debug.Log("Was here in false");
-                        //return minNode;
                     }
                 }
             }
-            
-            Debug.Log("Second min returned");
-            Debug.Log("node changed from " + current.toString() + " to " + secondMin.toString());
             return secondMin;
 
         }
         else
         {
-
-            Debug.Log("min node returned");
-            Debug.Log("node changed from " + current.toString() + " to " + minNode.toString());
             return minNode;
         }
-        
+
     }
 
+    //check if the node already in blocking list
     private bool nodeIsInBlock(Node current)
     {
         foreach (Node node in blockNodes)
@@ -230,5 +203,17 @@ public class PathFinder : MonoBehaviour
             }
         }
         return false;
+    }
+
+
+    //check if the next Node will be wall(Universal method)
+    public bool notBlockingOrWall(Vector3 start, Vector3 end)
+    {
+
+        RaycastHit2D hit;
+        hit = Physics2D.Linecast(new Vector2(start.x, start.y), new Vector2(end.x, end.y), blockingLayer);
+
+        return hit;
+
     }
 }
