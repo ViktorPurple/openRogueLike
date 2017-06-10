@@ -69,9 +69,12 @@ public class PlayerMovement : MonoBehaviour {
 
     private void Move()
     {
-
-        gameObject.AddComponent<PathFinder>().PathFinderMain(player.position, touchFinalRound, pathShit);
-        StartCoroutine(SmoothMovePlayer(touchFinalRound));
+        PathFinder path = gameObject.AddComponent<PathFinder>();
+        if (path.PathFinderMain(player.position, touchFinalRound, pathShit))
+        {
+            StartCoroutine(MovePlayerByPath(path.path));
+        }
+        //StartCoroutine(SmoothMovePlayer(touchFinalRound));
         
 
 
@@ -137,5 +140,37 @@ public class PlayerMovement : MonoBehaviour {
 
     }
 
+    private IEnumerator MovePlayerByPath(List<Vector3> path)
+    {
 
+
+        //while (player.position.x - end.x != 0 || player.position.y - end.y != 0)
+        for(int i = path.Count - 1; i >= 0; i--)
+        {
+            Vector3 nextStep = path[i];
+
+            // Debug.Log(cantMove(nextStep) == false ? "nope" : "yep");
+            if (!cantMove(nextStep))
+            {
+                float remaningDistance = (transform.position - nextStep).sqrMagnitude;
+
+                while (remaningDistance > float.Epsilon)
+                {
+                    playerMoving = true;
+                    Vector3 newPosition = Vector3.MoveTowards(player.position, nextStep, inverseMoveTime * Time.deltaTime);
+                    player.MovePosition(newPosition);
+                    remaningDistance = (transform.position - nextStep).sqrMagnitude;
+                    yield return null;
+                }
+            }
+            else
+            {
+                yield return null;
+                break;
+            }
+        }
+
+        playerMoving = false;
+        Destroy(go);
+    }
 }

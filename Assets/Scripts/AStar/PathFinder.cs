@@ -5,31 +5,33 @@ using UnityEngine;
 public class PathFinder : MonoBehaviour
 {
 
-    //temp
-
-    private GameObject go;
+    //tem    
     List<Node> listOfNodes = new List<Node>();
     List<Node> blockNodes = new List<Node>();
 
-    List<Node> notCleared = new List<Node>();
     List<Node> cleared = new List<Node>();
     //array of walls
     private GameObject[] walls;
 
-    private GameObject p;
 
     public PathFinder() { }
 
-    public void PathFinderMain(Vector3 start, Vector3 end, GameObject pathArea)
+    public List<Vector3> path = new List<Vector3>();
+
+
+    public bool PathFinderMain(Vector3 start, Vector3 end, GameObject pathArea)
     {
         // x, y, h, g,  f, parent
-        p = pathArea;        
+
+       // path = new List<Vector3>();
 
         //collect walls
         blockNodes = gameObject.AddComponent<BlockingLayerLoading>().getWalls();  
 
 
         Node startNode = new Node((int)start.x, (int)start.y, calculateHCost(start, end), 0, null);
+
+
         blockNodes.Add(startNode);
         listOfNodes.Add(startNode);
         //spare Nodes
@@ -43,16 +45,21 @@ public class PathFinder : MonoBehaviour
         {
             cleared.Add(current);
             addSpareNodes(end, current);
-            if (current == nextNode(current)) { Debug.Log(current.toString() + " " + nextNode(current).toString()); break; }
+            if (current == nextNode(current)) { return false; }
             current = nextNode(current);
             
            
         }
 
-        foreach (Node node in listOfNodes)
+        drawPath(current);
+
+        Debug.Log(path.Count);
+
+        foreach (Vector3 i in path)
         {
-            Debug.Log(node.toString());
+            Debug.Log(i);
         }
+        return true;
     }
 
 
@@ -112,9 +119,7 @@ public class PathFinder : MonoBehaviour
                 listOfNodes[i].h = current.h;
                 listOfNodes[i].g = current.g;
                 listOfNodes[i].f = current.f;
-                listOfNodes[i].parent = current.parent;
-
-                Debug.Log("changed");
+               // listOfNodes[i].parent = current.parent;
                 return;
             }
         }
@@ -124,14 +129,10 @@ public class PathFinder : MonoBehaviour
         {
             if (current.x == node.x && current.y == node.y)
             {
-                Debug.Log(" not added " + node.toString());
                 return;
             }
-        }
-
-        go = Instantiate(p, new Vector2(current.x, current.y), Quaternion.identity);
+        }        
         listOfNodes.Add(current);
-        Debug.Log("added " + current.toString());
     }
     
     
@@ -162,5 +163,15 @@ public class PathFinder : MonoBehaviour
             }
         }
         return false;
+    }
+
+    private void drawPath(Node current)
+    {
+        while (current.x != listOfNodes[0].x || current.y != listOfNodes[0].y)
+        //for (int i=0; i < 20; i++)
+        {
+            path.Add(new Vector3(current.x, current.y, 0));
+            current = current.parent;
+        }
     }
 }
