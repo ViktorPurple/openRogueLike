@@ -9,15 +9,16 @@ public class Node {
     public int h = 0;
     public int g = 0;
     public int f = 0;
+    public Node parent;
 
-
-    public Node(int x, int y, int h, int g)
+    public Node(int x, int y, int h, int g, Node parent)
     {
         this.x = x;
         this.y = y;
         this.h = h;
         this.g = g;
         this.f = g + h;
+        this.parent = parent;
     }
 
     public int getF()
@@ -69,7 +70,7 @@ public class Node {
 
     public string toString()
     {
-        return x + " " + y + " " + h + " " + g + " " + f;
+        return x + " " + y + " " + h + " " + g + " " + f + " parent " + parent;
     }
 
     
