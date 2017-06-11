@@ -5,6 +5,7 @@ using UnityEngine;
 public class PathFinder : MonoBehaviour
 {
 
+    private Node BIGEST_NODE = new Node(10000, 10000, 10000, 10000, null);
     //tem    
     List<Node> listOfNodes = new List<Node>();
     List<Node> blockNodes = new List<Node>();
@@ -34,31 +35,36 @@ public class PathFinder : MonoBehaviour
 
         blockNodes.Add(startNode);
         listOfNodes.Add(startNode);
+        cleared.Add(startNode);
         //spare Nodes
-
+        Debug.Log(isCleared(startNode));
         addSpareNodes(end, startNode);
 
         Node current = nextNode(listOfNodes[0]);
-        
+
+        int countSteps = 0;
         while (current.x != (int)end.x || current.y != (int)end.y)
         //for (int i=0; i < 1000; i++)
         {
             cleared.Add(current);
             addSpareNodes(end, current);
-            if (current == nextNode(current)) { return false; }
+            if (current == nextNode(current) || countSteps > 200) {
+                Debug.Log(" path is too long of not found" );
+                return false; }
             current = nextNode(current);
-            
-           
+            countSteps++;
         }
 
         drawPath(current);
 
         Debug.Log(path.Count);
 
-        foreach (Vector3 i in path)
+        foreach (Node i in listOfNodes)
         {
-            Debug.Log(i);
+            Debug.Log(i.toString() + " parent " );
         }
+
+        //Destroy(GetComponent<BlockingLayerLoading>());
         return true;
     }
 
@@ -98,9 +104,9 @@ public class PathFinder : MonoBehaviour
             {
                 if (!(i == 0 && j == 0))
                 {
-                    int g = Mathf.Abs(i) != Mathf.Abs(j) ? 14 : 10;
+                    int g = Mathf.Abs(i) != Mathf.Abs(j) ? 10 : 14;
                     //Debug.Log("not hitted");
-                    compareAndChange(new Node(current.x + i, current.y + j, calculateHCost(new Vector2(current.x + i, current.y + j), end), g, current));
+                    compareAndChange(new Node(current.x + i, current.y + j, calculateHCost(new Vector2(current.x + i, current.y + j), end), current.g + g, current));
                 }
             }
         }
@@ -116,10 +122,14 @@ public class PathFinder : MonoBehaviour
             
             if (current.CompareTo(listOfNodes[i]))
             {
-                listOfNodes[i].h = current.h;
-                listOfNodes[i].g = current.g;
-                listOfNodes[i].f = current.f;
-               // listOfNodes[i].parent = current.parent;
+                //listOfNodes[i].h = current.h;
+                if (!isCleared(current))
+                {
+                    listOfNodes[i].g = current.g;
+                    listOfNodes[i].f = listOfNodes[i].h + listOfNodes[i].g;
+                    listOfNodes[i].parent = current.parent;
+                }
+
                 return;
             }
         }
@@ -139,12 +149,12 @@ public class PathFinder : MonoBehaviour
 
     public Node nextNode(Node current)
     {
-        Node minNode = listOfNodes[1];
+        Node minNode = BIGEST_NODE;
         foreach (Node node in listOfNodes)
         {
-            if (minNode.f > node.f)
+            if (minNode.f >= node.f)
             {
-                if (!checkIfClear(node))
+                if (!isCleared(node))
                 {
                     minNode = node; 
                 }
@@ -153,11 +163,11 @@ public class PathFinder : MonoBehaviour
         return minNode;
     }
 
-    private bool checkIfClear(Node current)
+    private bool isCleared(Node current)
     {
         foreach (Node node in cleared)
         {
-            if (node == current)
+            if (node.x == current.x && node.y == current.y)
             {
                 return true;
             }
@@ -170,6 +180,8 @@ public class PathFinder : MonoBehaviour
         while (current.x != listOfNodes[0].x || current.y != listOfNodes[0].y)
         //for (int i=0; i < 20; i++)
         {
+
+            //Debug.Log(current.toString() + " parrent " + current.parent.toString());
             path.Add(new Vector3(current.x, current.y, 0));
             current = current.parent;
         }

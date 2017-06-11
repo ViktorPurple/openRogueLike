@@ -72,11 +72,15 @@ public class PlayerMovement : MonoBehaviour {
         PathFinder path = gameObject.AddComponent<PathFinder>();
         if (path.PathFinderMain(player.position, touchFinalRound, pathShit))
         {
-            StartCoroutine(MovePlayerByPath(path.path));
+            StartCoroutine(MovePlayerByPath(path.path));            
+        }
+        else
+        {
+            Destroy(go);
         }
         //StartCoroutine(SmoothMovePlayer(touchFinalRound));
-        
-
+        Destroy(GetComponent<PathFinder>());
+        Destroy(GetComponent<BlockingLayerLoading>());
 
     }
 

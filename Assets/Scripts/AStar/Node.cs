@@ -40,11 +40,19 @@ public class Node {
                 if (compare == 0)
                 {
 
-                    return true;
+                    return false;
                 }
                 else
                 {
-                    return true;
+                    if (compare < 0)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+
+                    }
                 }
 
             }
@@ -57,7 +65,6 @@ public class Node {
                 else
                 {
                     return true;
-
                 }
             }
            
@@ -70,7 +77,7 @@ public class Node {
 
     public string toString()
     {
-        return x + " " + y + " " + h + " " + g + " " + f + " parent " + parent;
+        return x + " " + y + " " + h + " " + g + " " + f;
     }
 
     
