@@ -37,7 +37,6 @@ public class PathFinder : MonoBehaviour
         listOfNodes.Add(startNode);
         cleared.Add(startNode);
         //spare Nodes
-        Debug.Log(isCleared(startNode));
         addSpareNodes(end, startNode);
 
         Node current = nextNode(listOfNodes[0]);
@@ -57,12 +56,11 @@ public class PathFinder : MonoBehaviour
 
         drawPath(current);
 
-        Debug.Log(path.Count);
-
-        foreach (Node i in listOfNodes)
-        {
-            Debug.Log(i.toString() + " parent " );
-        }
+        //Debug.Log(path.Count);
+        //foreach (Node i in listOfNodes)
+        //{
+        //    Debug.Log(i.toString() + " parent " );
+        //}
 
         //Destroy(GetComponent<BlockingLayerLoading>());
         return true;
@@ -180,8 +178,6 @@ public class PathFinder : MonoBehaviour
         while (current.x != listOfNodes[0].x || current.y != listOfNodes[0].y)
         //for (int i=0; i < 20; i++)
         {
-
-            //Debug.Log(current.toString() + " parrent " + current.parent.toString());
             path.Add(new Vector3(current.x, current.y, 0));
             current = current.parent;
         }
