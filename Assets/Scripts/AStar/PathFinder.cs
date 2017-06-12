@@ -20,7 +20,7 @@ public class PathFinder : MonoBehaviour
     public List<Vector3> path = new List<Vector3>();
 
 
-    public bool PathFinderMain(Vector3 start, Vector3 end, GameObject pathArea)
+    public bool PathFinderMain(Vector3 start, Vector3 end)
     {
         // x, y, h, g,  f, parent
 
@@ -47,8 +47,8 @@ public class PathFinder : MonoBehaviour
         {
             cleared.Add(current);
             addSpareNodes(end, current);
-            if (current == nextNode(current) || countSteps > 200) {
-                Debug.Log(" path is too long of not found" );
+            if (current == nextNode(current) || countSteps > 250) {
+                Debug.Log(" path is too long of not found" ); // prevent to move across whole map. need to experiment with the value.
                 return false; }
             current = nextNode(current);
             countSteps++;
@@ -56,11 +56,11 @@ public class PathFinder : MonoBehaviour
 
         drawPath(current);
 
-        //Debug.Log(path.Count);
-        //foreach (Node i in listOfNodes)
-        //{
-        //    Debug.Log(i.toString() + " parent " );
-        //}
+       //Debug.Log(path.Count);
+       // foreach (Node i in listOfNodes)
+       // {
+       //     Debug.Log(i.toString() + " parent ");
+       // }
 
         //Destroy(GetComponent<BlockingLayerLoading>());
         return true;
@@ -94,7 +94,7 @@ public class PathFinder : MonoBehaviour
     //add all side Nodes
     private void addSpareNodes(Vector3 end, Node current)
     {
-        Vector3 start = new Vector3(current.x, current.y, 0);
+        //Vector3 start = new Vector3(current.x, current.y, 0);
         //first line
         for (int i = -1; i <= 1; i++)
         {
@@ -144,7 +144,7 @@ public class PathFinder : MonoBehaviour
     }
     
     
-
+    //which one is the next
     public Node nextNode(Node current)
     {
         Node minNode = BIGEST_NODE;
@@ -160,7 +160,7 @@ public class PathFinder : MonoBehaviour
         }
         return minNode;
     }
-
+    //check if already cleared
     private bool isCleared(Node current)
     {
         foreach (Node node in cleared)

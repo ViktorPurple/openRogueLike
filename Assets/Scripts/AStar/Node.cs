@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Node {
+public class Node
+{
 
     public int x = 0;
     public int y = 0;
@@ -20,65 +21,34 @@ public class Node {
         this.f = g + h;
         this.parent = parent;
     }
-
-    public int getF()
-    {
-        return f; 
-    }
-
-
+    //**** This is more officient way to use setters getters. maybe later.
+    //public int getF()
+    //{
+    //    return f;
+    //}
 
     public bool CompareTo(Node nodeToCompare)
     {
         if (this.x == nodeToCompare.x && this.y == nodeToCompare.y)
-        {             
-            int compare = f.CompareTo(nodeToCompare.f);
-
-            if (compare == 0)
-            {
-                compare = h.CompareTo(nodeToCompare.h);
-                if (compare == 0)
-                {
-
-                    return false;
-                }
-                else
-                {
-                    if (compare < 0)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-
-                    }
-                }
-
-            }
-            else
-            {
-                if (compare < 0)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-           
-        }
-        else
         {
-            return false;
+            if (this.f > nodeToCompare.f) { return false; }
+            if (this.f == nodeToCompare.f)
+            {
+                if (this.g == nodeToCompare.g && this.h == nodeToCompare.h) { return false; }
+                if (this.g > nodeToCompare.g) { return false; }
+            }
+            return true;
         }
+        return false;
     }
-
+    //print info about node. debuging purpose
     public string toString()
     {
         return x + " " + y + " " + h + " " + g + " " + f;
     }
 
-    
+
+
+
+
 }

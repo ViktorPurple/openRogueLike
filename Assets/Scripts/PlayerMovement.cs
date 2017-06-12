@@ -25,16 +25,18 @@ public class PlayerMovement : MonoBehaviour {
     [SerializeField]
     private LayerMask blockingLayer;
     private BoxCollider2D boxCollider;
+    //list of walls
+    List<Node> blockNodes = new List<Node>();
 
     //test vars
     [SerializeField]
     private GameObject touchMark;
     [SerializeField]
-    private GameObject pathShit;
     private GameObject go;
 
     // Use this for initialization
     void Start() {
+        blockNodes = gameObject.AddComponent<BlockingLayerLoading>().getWalls();
         boxCollider = GetComponent<BoxCollider2D>();
         player = GetComponent<Rigidbody2D>();
         inverseMoveTime = 1f / moveTime;
@@ -42,8 +44,6 @@ public class PlayerMovement : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        int horizontal = 0;
-        int vertical = 0;
 
         if (Input.touchCount > 0 && !playerMoving)
         {
@@ -70,7 +70,7 @@ public class PlayerMovement : MonoBehaviour {
     private void Move()
     {
         PathFinder path = gameObject.AddComponent<PathFinder>();
-        if (path.PathFinderMain(player.position, touchFinalRound, pathShit))
+        if (path.PathFinderMain(player.position, youTouchWall(touchFinalRound)))
         {
             StartCoroutine(MovePlayerByPath(path.path));            
         }
@@ -176,5 +176,26 @@ public class PlayerMovement : MonoBehaviour {
 
         playerMoving = false;
         Destroy(go);
+    }
+
+    //check if tap on wall
+    private Vector2 youTouchWall(Vector2 end)
+    {
+        foreach (Node node in blockNodes)
+        {
+            if (end.x == node.x && end.y == node.y)
+            {
+                float x = 0;
+                x = player.position.x - end.x > 0 ? -1 : 1;
+                x = player.position.x - end.x == 0 ? 0 : x;
+
+                float y = 0;
+                y = player.position.y - end.y > 0 ? -1 : 1;
+                y = player.position.y - end.y == 0 ? 0 : y;
+
+                return new Vector3(end.x - x, end.y - y, 0);
+            }
+        }
+        return end;
     }
 }
