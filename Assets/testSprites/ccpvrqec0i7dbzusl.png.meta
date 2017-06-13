@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 16cc85fbd0b64ad4ca887ae20c4fbf8a
-timeCreated: 1496798633
+timeCreated: 1497307121
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -9,6 +9,7 @@ TextureImporter:
     21300004: ccpvrqec0i7dbzusl_2
     21300006: ccpvrqec0i7dbzusl_3
     21300008: ccpvrqec0i7dbzusl_4
+    21300010: ccpvrqec0i7dbzusl_5
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -140,6 +141,19 @@ TextureImporter:
         serializedVersion: 2
         x: 272
         y: 274
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: ccpvrqec0i7dbzusl_5
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 172
         width: 32
         height: 32
       alignment: 0

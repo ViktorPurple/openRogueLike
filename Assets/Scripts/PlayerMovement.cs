@@ -13,6 +13,9 @@ public class PlayerMovement : MonoBehaviour {
     //camera
     [SerializeField]
     private Camera cam;
+    //time to move
+    [SerializeField]
+    public float turnDelay = .1f;
     //Player Moving
     bool playerMoving = false;
 
@@ -44,25 +47,27 @@ public class PlayerMovement : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-
-        if (Input.touchCount > 0 && !playerMoving)
+        if (GameManager.instance.playersTurn)
         {
-            Touch whereToGo = Input.touches[0];
-            if (whereToGo.phase == TouchPhase.Began)
+            if (Input.touchCount > 0 && !playerMoving)
             {
-                
-                //get tap position in points
-                touchPoz = cam.ScreenToWorldPoint(new Vector3(whereToGo.position.x, whereToGo.position.y, 0f));
+                Touch whereToGo = Input.touches[0];
+                if (whereToGo.phase == TouchPhase.Began)
+                {
 
-                //Vector3 -> Vector 2
-                touchFinalRound = new Vector2(Mathf.Round(touchPoz.x), Mathf.Round(touchPoz.y));
+                    //get tap position in points
+                    touchPoz = cam.ScreenToWorldPoint(new Vector3(whereToGo.position.x, whereToGo.position.y, 0f));
+
+                    //Vector3 -> Vector 2
+                    touchFinalRound = new Vector2(Mathf.Round(touchPoz.x), Mathf.Round(touchPoz.y));
 
 
-                go = Instantiate(touchMark, touchFinalRound, Quaternion.identity);
+                    go = Instantiate(touchMark, touchFinalRound, Quaternion.identity);
 
 
-                Move();
-
+                    Move();
+                    
+                }
             }
         }
     }
@@ -78,45 +83,47 @@ public class PlayerMovement : MonoBehaviour {
         {
             Destroy(go);
         }
+
+
         //StartCoroutine(SmoothMovePlayer(touchFinalRound));
         Destroy(GetComponent<PathFinder>());
         Destroy(GetComponent<BlockingLayerLoading>());
-
+        Destroy(GetComponent<BlockingLayerLoading>());
     }
 
-    private IEnumerator SmoothMovePlayer(Vector3 end)
-    {
+    //private IEnumerator SmoothMovePlayer(Vector3 end)
+    //{
         
 
-        while (player.position.x - end.x != 0 || player.position.y - end.y != 0)
-        {
+    //    while (player.position.x - end.x != 0 || player.position.y - end.y != 0)
+    //    {
             
 
-            Vector3 nextStep = calculateNextCell(end);
+    //        Vector3 nextStep = calculateNextCell(end);
          
-           // Debug.Log(cantMove(nextStep) == false ? "nope" : "yep");
-            if (!cantMove(nextStep))
-            {
-                float remaningDistance = (transform.position - nextStep).sqrMagnitude;
+    //       // Debug.Log(cantMove(nextStep) == false ? "nope" : "yep");
+    //        if (!cantMove(nextStep))
+    //        {
+    //            float remaningDistance = (transform.position - nextStep).sqrMagnitude;
 
-                while (remaningDistance > float.Epsilon)
-                {
-                    playerMoving = true;
-                    Vector3 newPosition = Vector3.MoveTowards(player.position, nextStep, inverseMoveTime * Time.deltaTime);
-                    player.MovePosition(newPosition);
-                    remaningDistance = (transform.position - nextStep).sqrMagnitude;
-                    yield return null;
-                }
-            } else
-            {
-                yield return null;
-                break;
-            }
-        }
+    //            while (remaningDistance > float.Epsilon)
+    //            {
+    //                playerMoving = true;
+    //                Vector3 newPosition = Vector3.MoveTowards(player.position, nextStep, inverseMoveTime * Time.deltaTime);
+    //                player.MovePosition(newPosition);
+    //                remaningDistance = (transform.position - nextStep).sqrMagnitude;
+    //                yield return null;
+    //            }
+    //        } else
+    //        {
+    //            yield return null;
+    //            break;
+    //        }
+    //    }
 
-        playerMoving = false;
-        Destroy(go);
-    }
+    //    playerMoving = false;
+    //    Destroy(go);
+    //}
 
     private Vector3 calculateNextCell(Vector3 end)
     {
@@ -147,13 +154,13 @@ public class PlayerMovement : MonoBehaviour {
     private IEnumerator MovePlayerByPath(List<Vector3> path)
     {
 
-
+        //yield return new WaitForSeconds(turnDelay);
         //while (player.position.x - end.x != 0 || player.position.y - end.y != 0)
-        for(int i = path.Count - 1; i >= 0; i--)
+        for (int i = path.Count - 1; i >= 0; i--)
         {
             Vector3 nextStep = path[i];
 
-            // Debug.Log(cantMove(nextStep) == false ? "nope" : "yep");
+            Debug.Log("Player turn");
             if (!cantMove(nextStep))
             {
                 float remaningDistance = (transform.position - nextStep).sqrMagnitude;
@@ -165,6 +172,7 @@ public class PlayerMovement : MonoBehaviour {
                     player.MovePosition(newPosition);
                     remaningDistance = (transform.position - nextStep).sqrMagnitude;
                     yield return null;
+                    //yield return new WaitForSeconds(turnDelay);
                 }
             }
             else
@@ -172,6 +180,10 @@ public class PlayerMovement : MonoBehaviour {
                 yield return null;
                 break;
             }
+
+            GameManager.instance.playersTurn = false;
+            //yield return null;
+            yield return new WaitForSeconds(turnDelay);
         }
 
         playerMoving = false;
