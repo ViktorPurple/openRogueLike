@@ -6,11 +6,15 @@ public class Enemy : MonoBehaviour
 {
 
     [SerializeField]
-    private int playerDamage;
-    [SerializeField]
     private float viewAbility;
     [SerializeField]
     private LayerMask blockingLayer;
+    [SerializeField]
+    private LayerMask playerLayer;
+    [SerializeField]
+    private LayerMask enemyLayer;
+    [SerializeField]
+    private int baseDamage;
 
     // public AudioClip[] enemyAttack;
     private Rigidbody2D enemy;
@@ -48,14 +52,14 @@ public class Enemy : MonoBehaviour
         y = target.position.y - transform.position.y == 0 ? 0 : y;
 
 
-        Debug.Log("enemy going: " + x + ", " + y);
+        //Debug.Log("enemy going: " + x + ", " + y);
         Vector3 end = new Vector3(transform.position.x + x, transform.position.y + y, 0);
 
 
-        Debug.Log(cantMove(end) == false ? "nope" : "yep");
+        //Debug.Log(cantMove(end) == false ? "nope" : "yep");
 
-       StartCoroutine(SmoothMovement(end));
-        
+        StartCoroutine(SmoothMovement(end));
+
         return;
     }
 
@@ -64,16 +68,23 @@ public class Enemy : MonoBehaviour
     {
         if (!cantMove(end))
         {
-            float remaningDistance = (transform.position - end).sqrMagnitude;
-            while (remaningDistance > float.Epsilon)
+            if (!attackHit(end))
             {
-                Vector3 newPosition = Vector3.MoveTowards(enemy.position, end, inverseMoveTime * Time.deltaTime);
-                enemy.MovePosition(newPosition);
-                remaningDistance = (transform.position - end).sqrMagnitude;
-                //yield return new WaitForSeconds(moveTime);
-                yield return null;
+                float remaningDistance = (transform.position - end).sqrMagnitude;
+
+                while (remaningDistance > float.Epsilon)
+                {
+                    Vector3 newPosition = Vector3.MoveTowards(enemy.position, end, inverseMoveTime * Time.deltaTime);
+                    enemy.MovePosition(newPosition);
+                    remaningDistance = (transform.position - end).sqrMagnitude;
+                    //yield return new WaitForSeconds(moveTime);
+                    yield return null;
+                }
             }
-           // yield return new WaitForSeconds(turnDelay);
+            else
+            {
+                Debug.Log("hitted for " + baseDamage);
+            }
         }
     }
 
@@ -83,9 +94,25 @@ public class Enemy : MonoBehaviour
 
         boxCollider.enabled = false;
         hit = Physics2D.Linecast(new Vector2(enemy.position.x, enemy.position.y), new Vector2(end.x, end.y), blockingLayer);
+        if (!hit)
+        {
+            hit = Physics2D.Linecast(new Vector2(enemy.position.x, enemy.position.y), new Vector2(end.x, end.y), enemyLayer);
+        }
         boxCollider.enabled = true;
 
         return hit;
-
     }
+
+    private bool attackHit(Vector3 end)
+    {
+        RaycastHit2D hit;
+
+        boxCollider.enabled = false;
+        hit = Physics2D.Linecast(new Vector2(enemy.position.x, enemy.position.y), new Vector2(end.x, end.y), playerLayer);
+        boxCollider.enabled = true;
+
+        return hit;
+    }
+
+
 }

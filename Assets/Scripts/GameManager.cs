@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
 
     private List<Enemy> enemies;
 
-    private bool enemiesMoving;
+    public bool enemiesMoving;
 
     // Use this for initialization
     void Awake()
@@ -35,7 +35,6 @@ public class GameManager : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
         enemies = new List<Enemy>();
-
     }
 
 
@@ -43,8 +42,12 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //healthBar.CurrentVal = hp;
+        //foodBar.CurrentVal = food;
+
         if (playersTurn || enemiesMoving)
             return;
+
         StartCoroutine(MoveEnemies());
 
     }
@@ -64,7 +67,7 @@ public class GameManager : MonoBehaviour
             //While enemiesMoving is true player is unable to move.
             enemiesMoving = true;
 
-            //yield return new WaitForSeconds(turnDelay);
+            yield return new WaitForSeconds(turnDelay);
 
             //If there are no enemies spawned (IE in first level):
             if (enemies.Count == 0)
@@ -72,19 +75,20 @@ public class GameManager : MonoBehaviour
                 yield return new WaitForSeconds(turnDelay);
             }
 
+            Debug.Log(enemies.Count);
             //Loop through List of Enemy objects.
-            for (int i = 1; i < enemies.Count; i++)
+            for (int i = 0; i < enemies.Count; i++)
             {
                 //Call the MoveEnemy function of Enemy at index i in the enemies List.
                 enemies[i].Move();
-
-                Debug.Log("+" + i);
                 //Wait for Enemy's moveTime before moving next Enemy, 
-                yield return null;
+                // yield return null;
+                yield return new WaitForSeconds(.15f);
             }
-           
-            enemiesMoving = false;
+
+
             playersTurn = true;
+            enemiesMoving = false;
         }
     }
 }
