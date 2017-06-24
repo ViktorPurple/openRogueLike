@@ -32,6 +32,13 @@ public class PlayerMovement : MonoBehaviour
     private int food;
     [SerializeField]
     private int hp;
+    //battlestats
+    [SerializeField]
+    private int number;
+    [SerializeField]
+    private int dice;
+    [SerializeField]
+    private int crit;
 
     //moving speed
     public float moveTime = 0.1f;
@@ -40,6 +47,9 @@ public class PlayerMovement : MonoBehaviour
     //collision 
     [SerializeField]
     private LayerMask blockingLayer;
+    [SerializeField]
+    private LayerMask enemyLayer;
+
     private BoxCollider2D boxCollider;
     //list of walls
     List<Node> blockNodes = new List<Node>();
@@ -197,6 +207,11 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 playerStop = true;
+                if (hitEnemy(nextStep))
+                {
+                    GameManager.instance.hitEnemyOnPosition(damageCalc(number, dice), nextStep, critHappens(crit));
+                }
+                yield return null;
                 break;
             }
         }
@@ -222,13 +237,23 @@ public class PlayerMovement : MonoBehaviour
     {
         RaycastHit2D hit;
 
-
         boxCollider.enabled = false;
         hit = Physics2D.Linecast(new Vector2(player.position.x, player.position.y), new Vector2(end.x, end.y), blockingLayer);
         boxCollider.enabled = true;
 
         return hit;
+    }
 
+
+    private bool hitEnemy(Vector3 end)
+    {
+        RaycastHit2D hit;
+
+        boxCollider.enabled = false;
+        hit = Physics2D.Linecast(new Vector2(player.position.x, player.position.y), new Vector2(end.x, end.y), enemyLayer);
+        boxCollider.enabled = true;
+
+        return hit;
     }
 
     //private IEnumerator MovePlayerByPath(List<Vector3> path)
@@ -321,9 +346,20 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void gotHit(int damage)
+    public void gotHit(int damage, bool crit)
     {
-        hp -= damage;
+        if (crit)
+        {
+            FloatingTextController.CreateFloatingText((2 * damage).ToString(), transform, Color.red);
+            hp -= 2 * damage;
+        }
+        else
+        {
+            FloatingTextController.CreateFloatingText(damage.ToString(), transform, Color.yellow);
+            hp -= damage;
+        }
+       
+        gameOver();
         healthBar.CurrentVal = hp;
     }
 
@@ -337,5 +373,24 @@ public class PlayerMovement : MonoBehaviour
     {
         food += foodAmount;
         foodBar.CurrentVal = food;
+    }
+
+
+    //damage section
+    private int damageCalc(int number, int dice)
+    {
+
+        int damage = 0;
+        for (int i = 0; i < number; i++)
+        {
+            damage += Random.Range(1, dice);
+        }
+
+        return damage;
+    }
+
+    private bool critHappens(int crit)
+    {
+        return (Random.Range(0, 100) <= crit);
     }
 }

@@ -46,4 +46,5 @@ public class Stat
         this.MaxVal = max;
         this.CurrentVal = current;
     }
-    }
+
+ }

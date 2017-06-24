@@ -48,6 +48,7 @@ public class Player : MonoBehaviour {
     {
         hp -= damage;
         healthBar.CurrentVal = hp;
+        gameOver();
     }
 
     public void gainHp(int heal)

@@ -34,6 +34,8 @@ public class GameManager : MonoBehaviour
                 Destroy(gameObject);
         }
         DontDestroyOnLoad(gameObject);
+
+        FloatingTextController.Initialize();
         enemies = new List<Enemy>();
     }
 
@@ -59,6 +61,13 @@ public class GameManager : MonoBehaviour
         enemies.Add(script);
     }
 
+    //remove enemies
+    public void RemoveEnemy(int id)
+    {
+        enemies.RemoveAt(id);
+    }
+
+
     //move Enemies
     IEnumerator MoveEnemies()
     {
@@ -74,8 +83,7 @@ public class GameManager : MonoBehaviour
             {
                 yield return new WaitForSeconds(turnDelay);
             }
-
-            Debug.Log(enemies.Count);
+            
             //Loop through List of Enemy objects.
             for (int i = 0; i < enemies.Count; i++)
             {
@@ -89,6 +97,18 @@ public class GameManager : MonoBehaviour
 
             playersTurn = true;
             enemiesMoving = false;
+        }
+    }
+
+    public void hitEnemyOnPosition(int damage, Vector2 target, bool crit)
+    {
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            if (enemies[i].transform.position.x == target.x && enemies[i].transform.position.y == target.y)
+            {
+                enemies[i].gotDamaged(damage, crit, i);
+                break;
+            }
         }
     }
 }

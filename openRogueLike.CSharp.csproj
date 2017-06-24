@@ -83,6 +83,8 @@
     <Compile Include="Assets\Scripts\AStar\PathFinder.cs" />
     <Compile Include="Assets\Scripts\CameraFollow.cs" />
     <Compile Include="Assets\Scripts\Enemy.cs" />
+    <Compile Include="Assets\Scripts\FloatingText.cs" />
+    <Compile Include="Assets\Scripts\FloatingTextController.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\HpBar\Bar.cs" />
     <Compile Include="Assets\Scripts\HpBar\Stat.cs" />

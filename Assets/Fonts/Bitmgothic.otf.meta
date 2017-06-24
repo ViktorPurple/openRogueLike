@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 931c1295ca59f4a4aa3399a8d477abfc
+timeCreated: 1498333113
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Bitmgothic
+  fontNames:
+  - Bitmgothic
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
